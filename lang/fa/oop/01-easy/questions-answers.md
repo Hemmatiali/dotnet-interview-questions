@@ -247,3 +247,55 @@ public class Ledger : IPrintable, IExportable
 }
 
 ```
+
+## Q4. تفاوت `virtual`، `override` و `new` در C# چیست؟
+
+**Question:**  
+کلیدواژه‌های `virtual`، `override` و `new` در C# چه معنی‌ای دارند، هرکدام چه زمانی استفاده می‌شوند و چه اثری روی چندریختی (polymorphism) دارند؟
+
+**Answer:**  
+خلاصهٔ تفاوت‌ها:
+
+| کلیدواژه  | محل اعلان         | کاربرد                                     | چندریختی |
+|-----------|--------------------|--------------------------------------------|----------|
+| `virtual` | کلاس پایه          | قابلِ override کردن می‌کند                 | ✅ بله    |
+| `override`| کلاس مشتق          | جایگزینِ عضوِ `virtual`/`abstract`/`override` در پایه | ✅ بله |
+| `new`     | کلاس مشتق          | **مخفی‌سازی** عضوِ همنام/هم‌امضا در پایه (method hiding) | ❌ خیر (ارسال ایستا) |
+
+**نکات کلیدی:**
+- `override` فقط وقتی مجاز است که در کلاس پایه عضوی با **امضای یکسان** و یکی از حالت‌های `virtual`/`abstract`/`override` وجود داشته باشد (بازگشت هم‌خوان؛ **covariant return** مجاز).
+- `new` فقط **مخفی‌سازی** انجام می‌دهد و ارسال (dispatch) به‌صورت **ایستا** و بر اساس **نوعِ ایستای** متغیر انجام می‌شود، نه نوع زمان اجرا.
+- می‌توان `new` را با `virtual` ترکیب کرد تا یک **شکاف مجازی جدید** در کلاس مشتق بسازید: `public new virtual void M() { ... }`.
+- با `sealed override` می‌توانید جلوی overrideهای بعدی را بگیرید.
+- اعضای غیرمجازی در پایه **قابل override نیستند**؛ فقط می‌توان آن‌ها را با `new` مخفی کرد.
+
+**مثال (تفاوت override و new):**
+```csharp
+public class Base
+{
+    public virtual void Speak() => Console.WriteLine("Base.Speak (virtual)");
+    public void Ping() => Console.WriteLine("Base.Ping (non-virtual)");
+}
+
+public class OverrideChild : Base
+{
+    public override void Speak() => Console.WriteLine("OverrideChild.Speak (override)");
+    // مخفی‌سازی عضو غیرمجازی؛ ارسال ایستا تعیین‌کننده است
+    public new void Ping() => Console.WriteLine("OverrideChild.Ping (new/hide)");
+}
+
+public class NewChild : Base
+{
+    // مخفی‌سازی عضو مجازی؛ از دید مرجعِ Base چندریختی رخ نمی‌دهد
+    public new void Speak() => Console.WriteLine("NewChild.Speak (new/hide)");
+}
+
+Base b1 = new OverrideChild();
+Base b2 = new NewChild();
+OverrideChild o = new OverrideChild();
+
+b1.Speak(); // OverrideChild.Speak (override) -> چندریختی زمان اجرا
+b2.Speak(); // Base.Speak (virtual) -> چون NewChild override نکرده، فقط hide کرده است
+b1.Ping();  // Base.Ping (non-virtual) -> نوع ایستای متغیر Base است
+o.Ping();   // OverrideChild.Ping (new/hide) -> نوع ایستای متغیر OverrideChild است
+```

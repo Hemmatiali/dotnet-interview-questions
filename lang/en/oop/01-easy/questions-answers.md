@@ -249,5 +249,55 @@ public class Ledger : IPrintable, IExportable
 }
 ```
 
+## Q4. What’s the difference between `virtual`, `override`, and `new` in C#?
 
+**Question:**  
+What do the C# keywords `virtual`, `override`, and `new` mean, when should each be used, and how do they affect polymorphism?
+
+**Answer:**  
+At a glance:
+
+| Keyword   | Declared In       | Purpose                                    | Polymorphism |
+|-----------|-------------------|--------------------------------------------|--------------|
+| `virtual` | Base class        | Marks a member as overridable              | ✅ Yes       |
+| `override`| Derived class     | Replaces a `virtual`/`abstract`/`override` member from base | ✅ Yes |
+| `new`     | Derived class     | Hides a base member with the **same name/signature** (method hiding) | ❌ No (static dispatch) |
+
+**Key points:**
+- `override` **requires** a matching `virtual`/`abstract`/`override` member in the base with the **same signature** and **compatible return type** (covariant returns allowed).
+- `new` performs **member hiding** (compile-time). Dispatch depends on the **static type** of the variable, not the runtime type.
+- You can combine `new` with `virtual` to start a **new virtual slot** in the derived class: `public new virtual void M() { ... }`.
+- Use `sealed override` to stop further overrides.
+- Non-virtual base members **cannot** be overridden—only hidden with `new`.
+
+**Example (override vs new):**
+```csharp
+public class Base
+{
+    public virtual void Speak() => Console.WriteLine("Base.Speak (virtual)");
+    public void Ping() => Console.WriteLine("Base.Ping (non-virtual)");
+}
+
+public class OverrideChild : Base
+{
+    public override void Speak() => Console.WriteLine("OverrideChild.Speak (override)");
+    // Hides the non-virtual method; static dispatch decides
+    public new void Ping() => Console.WriteLine("OverrideChild.Ping (new/hide)");
+}
+
+public class NewChild : Base
+{
+    // Hides the virtual method; no polymorphism for Speak via Base reference
+    public new void Speak() => Console.WriteLine("NewChild.Speak (new/hide)");
+}
+
+Base b1 = new OverrideChild();
+Base b2 = new NewChild();
+OverrideChild o = new OverrideChild();
+
+b1.Speak(); // OverrideChild.Speak (override) -> polymorphic (runtime)
+b2.Speak(); // Base.Speak (virtual) -> because NewChild hid, not override
+b1.Ping();  // Base.Ping (non-virtual) -> static type Base
+o.Ping();   // OverrideChild.Ping (new/hide) -> static type OverrideChild
+```
 
