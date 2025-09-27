@@ -299,3 +299,47 @@ b2.Speak(); // Base.Speak (virtual) -> چون NewChild override نکرده، ف�
 b1.Ping();  // Base.Ping (non-virtual) -> نوع ایستای متغیر Base است
 o.Ping();   // OverrideChild.Ping (new/hide) -> نوع ایستای متغیر OverrideChild است
 ```
+
+## Q5. تفاوت **overload** و **override** در C# چیست؟
+
+**Question:**  
+تفاوت **overload** (هم‌نامی با امضای متفاوت) و **override** (بازنویسی متد والد) را با مثال‌های ساده توضیح دهید.
+
+**Answer:**  
+**خلاصه**
+
+| مفهوم       | overload                                   | override                                  |
+|-------------|--------------------------------------------|-------------------------------------------|
+| یعنی چی؟    | نام یکسان، **امضای متفاوت**                | کلاس فرزند **متد والد را بازنویسی** می‌کند |
+| زمان اجرا؟  | انتخاب در **Compile time**                 | انتخاب در **Run time** (ارسال مجازی)      |
+| کجا؟        | در **همان کلاس**                           | بین **کلاس پایه و فرزند**                 |
+
+> Overload = پارامترها فرق می‌کنند.  
+> Override = متد پایه `virtual` و در فرزند `override`.
+
+**مثال — Overload (در همان کلاس):**
+```csharp
+public class MathUtil
+{
+    public int Sum(int a, int b) => a + b;                // Sum(int,int)
+    public int Sum(int a, int b, int c) => a + b + c;     // Sum(int,int,int)
+    public double Sum(double a, double b) => a + b;       // Sum(double,double)
+}
+
+// انتخاب نسخهٔ درستِ Sum(...) در زمان کامپایل بر اساس نوع/تعداد آرگومان‌ها انجام می‌شود.
+```
+**مثال — Override (بین پایه و فرزند):**
+```csharp
+public class Greeter
+{
+    public virtual void SayHello() => Console.WriteLine("Hello from base");
+}
+
+public class LoudGreeter : Greeter
+{
+    public override void SayHello() => Console.WriteLine("HELLO from child!");
+}
+
+Greeter g = new LoudGreeter();
+g.SayHello(); // در زمان اجرا متد فرزند صدا زده می‌شود (override)
+```

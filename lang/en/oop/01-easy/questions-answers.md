@@ -301,3 +301,47 @@ b1.Ping();  // Base.Ping (non-virtual) -> static type Base
 o.Ping();   // OverrideChild.Ping (new/hide) -> static type OverrideChild
 ```
 
+## Q5. What’s the difference between **overload** and **override** in C#?
+
+**Question:**  
+Explain the difference between **method overloading** and **method overriding** in C#, with simple examples.
+
+**Answer:**  
+**Summary**
+
+| Concept     | overload                                 | override                                   |
+|-------------|-------------------------------------------|--------------------------------------------|
+| Meaning     | Same method name, **different signature** | Child class **replaces** parent’s method   |
+| When        | **Compile time** resolution               | **Run time** (virtual dispatch)            |
+| Where       | **Same class** (or within the type)       | **Between base and derived** classes       |
+
+> Overload = different parameters.  
+> Override = `virtual` in base + `override` in derived.
+
+**Example — Overload (same class):**
+```csharp
+public class MathUtil
+{
+    public int Sum(int a, int b) => a + b;                // Sum(int,int)
+    public int Sum(int a, int b, int c) => a + b + c;     // Sum(int,int,int)
+    public double Sum(double a, double b) => a + b;       // Sum(double,double)
+}
+
+// Compile-time picks which Sum(...) based on the argument types/count.
+```
+**Example — Override (base vs derived):**
+```csharp
+public class Greeter
+{
+    public virtual void SayHello() => Console.WriteLine("Hello from base");
+}
+
+public class LoudGreeter : Greeter
+{
+    public override void SayHello() => Console.WriteLine("HELLO from child!");
+}
+
+Greeter g = new LoudGreeter();
+g.SayHello(); // Run-time calls LoudGreeter.SayHello (override)
+```
+
