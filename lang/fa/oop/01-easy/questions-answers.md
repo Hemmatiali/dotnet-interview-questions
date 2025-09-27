@@ -163,3 +163,87 @@ public class Bird : AnimalBase
 }
 
 ```
+
+## Q3. تفاوت‌های کلیدی بین abstract class و interface در C# چیست؟
+
+**Question:**  
+تفاوت‌های اصلی بین **abstract class** و **interface** در C# چیست و هرکدام را چه زمانی استفاده کنیم؟
+
+**Answer:**  
+خلاصهٔ تفاوت‌ها:
+
+| ویژگی                                   | abstract class                                  | interface                                                                 |
+|-----------------------------------------|--------------------------------------------------|---------------------------------------------------------------------------|
+| امکان داشتن پیاده‌سازی                   | ✅ بله (اعضای abstract **و** غیر abstract)        | ⚠️ به‌صورت سنتی **خیر**؛ از **C# 8** به بعد می‌تواند **default implementation** داشته باشد |
+| امکان داشتن فیلد (state)                | ✅ بله (فیلدهای نمونه)                           | ❌ خیر (فیلد نمونه ندارد)                                                |
+| داشتن سازنده (constructor)              | ✅ بله                                           | ❌ خیر (سازندهٔ نمونه ندارد)                                             |
+| تعداد ارث‌بری/پیاده‌سازی                | ✅ فقط یک کلاس پایه                              | ✅ یک کلاس می‌تواند **چندین** interface را پیاده‌سازی کند                |
+| سطح دسترسی اعضا                         | ✅ متنوع (`public/protected/internal/...`)       | ⚠️ قرارداد عمومی؛ اعضا عملاً بخشی از سطح عمومی نوع هستند                 |
+| سناریوی استفاده                         | اشتراک **state + رفتار پایهٔ مشترک**            | تعریف **قرارداد/قابلیت** بین انواع نامرتبط                              |
+
+**راهنما:**  
+- وقتی **state** مشترک، **توابع محافظت‌شده** و **بخشی از پیاده‌سازی مشترک** لازم دارید، از **abstract class** استفاده کنید.  
+- وقتی می‌خواهید یک **قابلیت/قرارداد** را برای انواع مختلف (حتی نامرتبط) تعریف کنید، از **interface** استفاده کنید.  
+- از **C# 8+**، امکان **default method** در interface وجود دارد؛ ولی همچنان **فیلد نمونه** ندارد و نقش اصلی آن **قرارداد** است.
+
+**نمونه‌ها**
+
+*abstract class (state و رفتار مشترک):*
+```csharp
+public abstract class Shape
+{
+    // وضعیت مشترک
+    protected double _x, _y;
+
+    protected Shape(double x, double y)
+    {
+        _x = x; _y = y;
+    }
+
+    // باید در فرزند پیاده‌سازی شود
+    public abstract double Area();
+
+    // رفتار مشترک اختیاری
+    public virtual void Move(double dx, double dy)
+    {
+        _x += dx; _y += dy;
+    }
+}
+
+public sealed class Circle : Shape
+{
+    private readonly double _r;
+
+    public Circle(double x, double y, double r) : base(x, y) => _r = r;
+
+    public override double Area() => Math.PI * _r * _r;
+}
+```
+```csharp
+public interface IPrintable
+{
+    void Print();
+    // C# 8+: امکان پیاده‌سازی پیش‌فرض
+    // void Print() => Console.WriteLine("چاپ پیش‌فرض");
+}
+
+public class Report : IPrintable
+{
+    public void Print() => Console.WriteLine("در حال چاپ گزارش...");
+}
+
+public class Invoice : IPrintable
+{
+    public void Print() => Console.WriteLine("در حال چاپ فاکتور...");
+}
+
+// قابلیت‌های چندگانه:
+public interface IExportable { void ExportCsv(string path); }
+
+public class Ledger : IPrintable, IExportable
+{
+    public void Print() => Console.WriteLine("در حال چاپ دفتر...");
+    public void ExportCsv(string path) => File.WriteAllText(path, "header,rows...");
+}
+
+```

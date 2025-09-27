@@ -166,7 +166,88 @@ public class Bird : AnimalBase
 
 ```
 
+## Q3. What are the key differences between an abstract class and an interface in C#?
 
+**Question:**  
+What are the key differences between an **abstract class** and an **interface** in C#, and when should I use each?
+
+**Answer:**  
+At a glance:
+
+| Feature                               | Abstract Class                          | Interface                                                                 |
+|---------------------------------------|-----------------------------------------|---------------------------------------------------------------------------|
+| Can contain implementation?           | ✅ Yes (abstract **and** concrete)       | ⚠️ Historically **no**; **since C# 8** can have **default implementations** |
+| Can have fields (state)?              | ✅ Yes (instance fields allowed)         | ❌ No instance fields                                                      |
+| Constructors                          | ✅ Yes                                   | ❌ No instance constructors                                                |
+| Inheritance / Implementation count    | ✅ Single base class only                | ✅ A class can implement **multiple** interfaces                           |
+| Access modifiers on members           | ✅ Any (`public/protected/internal/...`) | ⚠️ Members are effectively part of a public contract (public surface)      |
+| Use case                              | Share **state + base behavior**         | Define **capability/contract** across unrelated types                     |
+
+**Guidance:**  
+- Choose an **abstract class** when you need a shared base with **state, protected helpers, and partial implementation**.  
+- Choose an **interface** when you want to model **capabilities** that many unrelated types can implement.  
+- From **C# 8+**, interfaces can include **default interface methods**, but they still **cannot hold instance fields** and are best treated as contracts.
+
+**Examples**
+
+*Abstract class (shared state + behavior):*
+```csharp
+public abstract class Shape
+{
+    // Shared state
+    protected double _x, _y;
+
+    protected Shape(double x, double y)
+    {
+        _x = x; _y = y;
+    }
+
+    // Must be implemented by derived types
+    public abstract double Area();
+
+    // Optional shared behavior
+    public virtual void Move(double dx, double dy)
+    {
+        _x += dx; _y += dy;
+    }
+}
+
+public sealed class Circle : Shape
+{
+    private readonly double _r;
+
+    public Circle(double x, double y, double r) : base(x, y) => _r = r;
+
+    public override double Area() => Math.PI * _r * _r;
+}
+```
+```csharp
+public interface IPrintable
+{
+    void Print();
+    // C# 8+: default implementation possible
+    // void Print() => Console.WriteLine("Default print");
+}
+
+public class Report : IPrintable
+{
+    public void Print() => Console.WriteLine("Printing report...");
+}
+
+public class Invoice : IPrintable
+{
+    public void Print() => Console.WriteLine("Printing invoice...");
+}
+
+// Multiple capabilities:
+public interface IExportable { void ExportCsv(string path); }
+
+public class Ledger : IPrintable, IExportable
+{
+    public void Print() => Console.WriteLine("Printing ledger...");
+    public void ExportCsv(string path) => File.WriteAllText(path, "header,rows...");
+}
+```
 
 
 
