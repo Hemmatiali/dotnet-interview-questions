@@ -345,3 +345,52 @@ Greeter g = new LoudGreeter();
 g.SayHello(); // Run-time calls LoudGreeter.SayHello (override)
 ```
 
+## Q6. What’s the difference between **protected** and **private** in C#?
+
+**Question:**  
+Explain the difference between the access modifiers **protected** and **private** in C#, with simple examples.
+
+**Answer:**  
+- **private** → Member is only accessible **inside the same class**.  
+- **protected** → Member is accessible **inside the same class and in derived classes**.  
+
+**Example — private (only inside class):**
+```csharp
+public class Car
+{
+    private int speed = 0;
+
+    public void Accelerate()
+    {
+        speed += 10; // allowed, inside the same class
+    }
+}
+
+public class SportsCar : Car
+{
+    public void Test()
+    {
+        // speed = 100; ❌ not accessible, because it's private in Car
+    }
+}
+```
+```csharp
+public class Car
+{
+    protected int speed = 0;
+
+    public void Accelerate()
+    {
+        speed += 10; // allowed
+    }
+}
+
+public class SportsCar : Car
+{
+    public void Boost()
+    {
+        speed += 50; // ✅ accessible, because it's protected
+    }
+}
+
+```

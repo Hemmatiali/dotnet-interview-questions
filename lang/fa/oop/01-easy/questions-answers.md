@@ -343,3 +343,53 @@ public class LoudGreeter : Greeter
 Greeter g = new LoudGreeter();
 g.SayHello(); // در زمان اجرا متد فرزند صدا زده می‌شود (override)
 ```
+
+## Q6. تفاوت **protected** و **private** در C# چیست؟
+
+**Question:**  
+تفاوت سطح دسترسی **protected** و **private** در C# را با مثال ساده توضیح دهید.
+
+**Answer:**  
+- **private** → فقط در **خود کلاس** قابل دسترسی است.  
+- **protected** → در **خود کلاس و کلاس‌های فرزند** قابل دسترسی است.  
+
+**مثال — private (فقط داخل همان کلاس):**
+```csharp
+public class Car
+{
+    private int speed = 0;
+
+    public void Accelerate()
+    {
+        speed += 10; // مجاز، داخل همان کلاس
+    }
+}
+
+public class SportsCar : Car
+{
+    public void Test()
+    {
+        // speed = 100; ❌ دسترسی غیرممکن، چون private در Car است
+    }
+}
+```
+```csharp
+public class Car
+{
+    protected int speed = 0;
+
+    public void Accelerate()
+    {
+        speed += 10; // مجاز
+    }
+}
+
+public class SportsCar : Car
+{
+    public void Boost()
+    {
+        speed += 50; // ✅ مجاز، چون protected است
+    }
+}
+
+```
