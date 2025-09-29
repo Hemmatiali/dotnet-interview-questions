@@ -18,3 +18,36 @@ What are the different JIT / compilation modes (e.g. Pre-JIT, Tiered JIT, ReadyT
 - Long-running methods get optimized later, combining fast startup with high performance.  
 - Precompiled code (ReadyToRun) reduces JIT overhead but may be less optimized for specific hardware.  
 - Greater flexibility: .NET allows configuration of these behaviors (enable/disable tiered, quick JIT) via runtime settings. :contentReference[oaicite:5]{index=5}  
+
+
+## Q2. What is AOT (Ahead-Of-Time compilation) in .NET?
+
+**Question:**  
+What is **AOT (Ahead-Of-Time compilation)** in .NET, and how does it differ from JIT?
+
+**Answer:**  
+- **AOT (Ahead-Of-Time compilation)** means converting **IL code directly into native machine code at build or publish time**, instead of waiting for JIT to do it at runtime.  
+- In .NET, this is used to improve **startup performance**, reduce **runtime overhead**, and sometimes make apps smaller or easier to deploy.  
+- AOT is especially important in environments where JIT is restricted (e.g., iOS, Blazor WebAssembly).  
+
+**AOT in .NET:**  
+- **ReadyToRun (R2R):** partial AOT → compiles IL to native at publish, but can still fall back to JIT.  
+- **Full Native AOT (since .NET 7+):** compiles the whole app to native code → no JIT at runtime.  
+- **Mono AOT:** used in Xamarin/MAUI, Blazor WebAssembly → compiles IL to native WASM or platform-specific code.  
+
+**Advantages:**  
+- Faster startup (no JIT on first call).  
+- Works in restricted environments (no JIT allowed).  
+- Can reduce memory usage in some cases.  
+
+**Trade-offs:**  
+- Larger binaries (contains precompiled machine code).  
+- Less dynamic optimizations compared to Tiered JIT.  
+- Longer publish/build time.  
+
+**Example — publishing with ReadyToRun:**
+```bash
+dotnet publish -c Release -r win-x64 -p:PublishReadyToRun=true
+//Example — publishing with Native AOT (since .NET 7):
+dotnet publish -c Release -r win-x64 -p:PublishAot=true
+```
