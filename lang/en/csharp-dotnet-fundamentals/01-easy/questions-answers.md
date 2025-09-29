@@ -72,5 +72,49 @@ public class Demo
         ret
     }
 }
+```
 
+## Q3. What is JIT and CLR in .NET?
+
+**Question:**  
+What are **JIT (Just-In-Time compiler)** and **CLR (Common Language Runtime)** in .NET, and how do they work together?
+
+**Answer:**  
+- **CLR (Common Language Runtime):**  
+  - The execution engine of .NET.  
+  - Manages memory (GC), type safety, exceptions, security, threading, and execution of code.  
+  - Provides the runtime environment for IL code.  
+
+- **JIT (Just-In-Time compiler):**  
+  - A component of the CLR.  
+  - Converts IL (Intermediate Language) into **native machine code** at run time, just before execution.  
+  - Ensures the same IL assembly can run on different CPUs/OSes.  
+
+**JIT Compilation Modes:**  
+- **Normal JIT** → Compiles methods as they are called.  
+- **Pre-JIT (NGen, ReadyToRun)** → Compiles the whole assembly to native ahead of time.  
+- **Tiered JIT** (modern .NET) → Starts with fast compilation, then re-optimizes hot methods for performance.  
+
+**Example Flow:**  
+```text
+C# Code  →  IL (by C# compiler)  →  JIT (by CLR)  →  Machine Code → Executed
+```
+```csharp
+// Example — C# code compiled and executed with JIT:
+public class Calculator
+{
+    public int Multiply(int a, int b) => a * b;
+}
+
+class Program
+{
+    static void Main()
+    {
+        var calc = new Calculator();
+        Console.WriteLine(calc.Multiply(3, 4));
+    }
+}
+
+//At build → IL is generated.
+//At run → JIT compiles Multiply into native instructions the first time it’s called, then executes it.
 ```
