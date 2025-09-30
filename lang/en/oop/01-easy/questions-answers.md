@@ -392,5 +392,64 @@ public class SportsCar : Car
         speed += 50; // ✅ accessible, because it's protected
     }
 }
-
 ```
+
+## Q7. What is the difference between **composition** and **inheritance** in OOP?
+
+**Question:**  
+Explain the difference between **composition** and **inheritance** in object-oriented programming (OOP). When should you use each? Give simple examples in C#.
+
+**Answer:**  
+- **Inheritance** → A mechanism where a class derives from another class to reuse its members and extend or override its behavior. ("is-a" relationship).  
+- **Composition** → A mechanism where a class contains objects of other classes and uses their functionality. ("has-a" relationship).  
+
+**Comparison**
+
+| Aspect        | Inheritance ("is-a")                   | Composition ("has-a")                     |
+|---------------|-----------------------------------------|-------------------------------------------|
+| Relation      | Dog **is an** Animal                   | Car **has an** Engine                     |
+| Coupling      | Tighter (child depends on parent design)| Looser (flexible, components replaceable) |
+| Reuse         | Reuses behavior by extending base class | Reuses by delegating to other objects      |
+| Flexibility   | Harder to change hierarchy              | Easier to swap/change parts                |
+
+**Example — Inheritance:**
+```csharp
+public class Animal
+{
+    public virtual void Speak() => Console.WriteLine("Some sound");
+}
+
+public class Dog : Animal
+{
+    public override void Speak() => Console.WriteLine("Bark");
+}
+
+Animal a = new Dog();
+a.Speak(); // Bark
+```
+```csharp
+//Example — Composition:
+public class Engine
+{
+    public void Start() => Console.WriteLine("Engine starting...");
+}
+
+public class Car
+{
+    private Engine _engine = new Engine(); // has-an Engine
+
+    public void Start()
+    {
+        _engine.Start(); // delegate behavior
+        Console.WriteLine("Car is ready.");
+    }
+}
+
+Car c = new Car();
+c.Start();
+// Output:
+// Engine starting...
+// Car is ready.
+```
+- Use inheritance when there is a clear "is-a" hierarchy and you want polymorphism.
+- Prefer composition when you need flexibility, loose coupling, and easier testing — it’s often considered better for code maintainability ("favor composition over inheritance").

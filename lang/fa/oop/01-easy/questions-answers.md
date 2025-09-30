@@ -391,5 +391,64 @@ public class SportsCar : Car
         speed += 50; // ✅ مجاز، چون protected است
     }
 }
-
 ```
+
+## Q7. تفاوت **Composition** و **Inheritance** در OOP چیست؟
+
+**Question:**  
+تفاوت **ترکیب (Composition)** و **وراثت (Inheritance)** در برنامه‌نویسی شی‌ءگرا چیست؟ چه زمانی باید از هرکدام استفاده کرد؟ با مثال ساده در #C توضیح دهید.
+
+**Answer:**  
+- **Inheritance (وراثت)** → روشی که در آن یک کلاس از کلاس دیگری ارث‌بری می‌کند تا اعضا و رفتار آن را استفاده کرده یا بازنویسی کند. (رابطهٔ "است").  
+- **Composition (ترکیب)** → روشی که در آن یک کلاس شیءهای کلاس‌های دیگر را در خود نگه می‌دارد و از قابلیت‌های آن‌ها استفاده می‌کند. (رابطهٔ "دارد").  
+
+**مقایسه**
+
+| جنبه          | Inheritance ("است")                   | Composition ("دارد")                       |
+|---------------|---------------------------------------|--------------------------------------------|
+| رابطه         | Dog **یک Animal است**                 | Car **یک Engine دارد**                     |
+| میزان وابستگی | بالا (کلاس فرزند به طراحی والد وابسته)| پایین‌تر (انعطاف‌پذیر، اجزاء قابل‌تعویض)  |
+| استفاده مجدد  | با گسترش کلاس والد                    | با واگذاری رفتار به شیءهای داخلی            |
+| انعطاف‌پذیری  | تغییر سلسله‌مراتب دشوار              | تغییر/جایگزینی اجزاء آسان‌تر               |
+
+**مثال — وراثت:**
+```csharp
+public class Animal
+{
+    public virtual void Speak() => Console.WriteLine("Some sound");
+}
+
+public class Dog : Animal
+{
+    public override void Speak() => Console.WriteLine("Bark");
+}
+
+Animal a = new Dog();
+a.Speak(); // Bark
+```
+```csharp
+// مثال — ترکیب:
+public class Engine
+{
+    public void Start() => Console.WriteLine("Engine starting...");
+}
+
+public class Car
+{
+    private Engine _engine = new Engine(); // یک Engine دارد
+
+    public void Start()
+    {
+        _engine.Start(); // واگذاری رفتار
+        Console.WriteLine("Car is ready.");
+    }
+}
+
+Car c = new Car();
+c.Start();
+// خروجی:
+// Engine starting...
+// Car is ready.
+```
+- وقتی رابطهٔ "است" (is-a) واضح است و می‌خواهید از چندریختی استفاده کنید، از وراثت بهره ببرید.
+- وقتی انعطاف، وابستگی کمتر و تست‌پذیری مهم‌تر است، ترکیب انتخاب بهتری است. (اصل معروف: "Composition over Inheritance").
